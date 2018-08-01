@@ -1,0 +1,64 @@
+/* Write a function that, given a sentence, along with the position of an opening parenthesis, finds the corresponding closing parenthesis.
+Example: if the example string "(like this (and this))" is input with the number 11 (position of the first parenthesis), 
+the output should be 20 (position of the last parenthesis).
+*/
+#include <iostream>
+#include <string>
+
+// C++11 lest unit testing framework
+#include "lest.hpp"
+
+using namespace std;
+
+int getClosingParen(const string& sentence, int openingParenIndex)
+{
+    // return -1 for invalid inputs.
+    if (sentence.length() == 0 ) return -1;
+    if (openingParenIndex < 0 || openingParenIndex >= sentence.length()) return -1;
+    if (sentence[openingParenIndex] != '(') return -1;
+        
+        // find the position of the matching closing parenthesis.
+        int openNestedParens = 0;
+        
+        for (int position = openingParenIndex; position < sentence.length(); position++ ) {
+            char c = sentence[position];
+            
+            if (c == '(') {
+                openNestedParens++;
+            }
+            else if (c == ')') {
+                    openNestedParens--;
+                    if (openNestedParens == 0) {
+                      return position;
+                    } 
+                
+            }
+        }
+        return -1;
+}
+
+
+// tests
+
+const lest::test tests[] = {
+    CASE("All openers then closers") {
+        const int expected = 7;
+        const int actual = getClosingParen("((((()))))", 2);
+        EXPECT(actual == expected);
+    },
+    CASE("mixed openers and closers") {
+        const int expected = 10;
+        const int actual = getClosingParen("()()((()()))", 5);
+        EXPECT(actual == expected);
+    },
+    CASE("no matching closer") {
+        const int expected = -1;
+        const int actual = getClosingParen("()(()", 2);
+        EXPECT(actual == expected);
+    }
+};
+
+int main(int argc, char** argv)
+{
+    return lest::run(tests, argc, argv);
+}
